@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>12‑Week Dumbbell + Bodyweight Plan | Home Tracker</title>
+  <style>
+    :root{
+      --bg:#0b1020;/* deep navy */
+      --panel:#0f1426;/* dark card */
+      --ink:#e8ecf8;/* light text */
+      --muted:#9aa3bf;/* subtext */
+      --accent:#00d2ff;/* cyan */
+      --accent-2:#7c4dff;/* violet */
+      --ok:#22c55e;/* green */
+      --warn:#f59e0b;/* amber */
+      --danger:#ef4444;/* red */
+      --shadow:0 10px 30px rgba(0,0,0,.45);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Ubuntu; 
+      background:radial-gradient(1200px 600px at 80% -10%, rgba(124,77,255,.18), transparent),
+                 radial-gradient(900px 500px at -10% 10%, rgba(0,210,255,.18), transparent),
+                 var(--bg);
+      color:var(--ink);
+    }
+    header{
+      position:sticky; top:0; z-index:20; backdrop-filter:saturate(1.2) blur(8px);
+      background:linear-gradient(180deg, rgba(15,18,32,.85), rgba(15,18,32,.65) 60%, transparent);
+      padding:18px 16px 10px; border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .max{max-width:1200px; margin:0 auto; padding:0 8px}
+    .hero{display:flex; gap:16px; align-items:center; flex-wrap:wrap}
+    .hero h1{margin:0; font-size:clamp(22px,4vw,34px)}
+    .tag{padding:6px 10px; border-radius:999px; font-size:12px; letter-spacing:.5px; color:#0f1220; background:linear-gradient(90deg,var(--accent),var(--accent-2)); font-weight:700}
+    .sub{color:var(--muted); font-size:14px}
+
+    .toolbar{display:flex; gap:10px; flex-wrap:wrap; margin-top:10px}
+    .toolbar > *{background:var(--panel); border:1px solid rgba(255,255,255,.08); color:var(--ink); box-shadow:var(--shadow); border-radius:12px; padding:8px 12px}
+    input, select{background:transparent; border:none; color:inherit}
+    button{cursor:pointer}
+
+    .grid{display:grid; grid-template-columns: 320px 1fr; gap:18px; align-items:start}
+    @media (max-width: 940px){ .grid{ grid-template-columns: 1fr } }
+
+    .sidebar{position:sticky; top:86px; background:var(--panel); border:1px solid rgba(255,255,255,.10); border-radius:var(--radius); box-shadow:var(--shadow)}
+    .sidebar .box{padding:16px 16px}
+    .kpis{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+    .kpi{background:#141a33; border:1px dashed rgba(255,255,255,.08); border-radius:14px; padding:10px 12px}
+    .kpi h3{margin:6px 0 0; font-size:14px; color:var(--muted)}
+    .kpi strong{font-size:22px; letter-spacing:.3px}
+
+    .donut{width:160px; height:160px; border-radius:50%; background:conic-gradient(var(--accent) var(--p,0%), rgba(255,255,255,.08) 0); display:grid; place-items:center; margin:8px auto}
+    .donut span{font-size:26px; font-weight:800}
+
+    .note{font-size:13px; color:var(--muted)}
+
+    .phases{display:flex; gap:10px; flex-wrap:wrap}
+    .chip{border-radius:999px; padding:8px 12px; font-weight:600; border:1px solid rgba(255,255,255,.1); background:#141a33; cursor:pointer; color:var(--ink);}}
+    .chip.active{outline:2px solid var(--accent); background:linear-gradient(180deg,#1a2244,#0f1426)}
+
+    .cards{display:grid; grid-template-columns:repeat(auto-fill, minmax(290px,1fr)); gap:14px}
+    .card{background:var(--panel); border:1px solid rgba(255,255,255,.12); box-shadow:var(--shadow); border-radius:var(--radius); overflow:hidden}
+    .card header{position:relative; top:auto; backdrop-filter:none; background:linear-gradient(180deg, rgba(14,165,233,.35), rgba(255,255,255,0)); border-bottom:1px solid rgba(255,255,255,.08); padding:12px 14px}
+    .card header h3{margin:0; font-size:16px}
+    .card .body{padding:12px 14px}
+    .pill{font-size:12px; color:#ffffff; font-weight:800; border-radius:999px; padding:4px 8px; background:linear-gradient(90deg,var(--accent),var(--accent-2));}
+
+    ul{padding-left:18px; margin:8px 0}
+    .ex{display:flex; align-items:center; gap:10px; padding:8px; border:1px dashed rgba(255,255,255,.08); border-radius:10px; margin:6px 0}
+    .ex input[type=checkbox]{transform:scale(1.25)}
+    .ex .label{flex:1}
+    .meta{font-size:12px; color:var(--muted)}
+
+    .finisher{border-left:4px solid var(--warn); padding-left:10px; margin-top:8px}
+    .cooldown{border-left:4px solid var(--accent-2); padding-left:10px; margin-top:8px}
+
+    .controls{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+    .btn{background:#141a33; border:1px solid rgba(255,255,255,.14); padding:8px 10px; border-radius:10px; font-weight:700; color:var(--ink)}}
+    .btn.ok{border-color:rgba(34,197,94,.45)}
+    .btn.warn{border-color:rgba(245,158,11,.45)}
+    .btn.danger{border-color:rgba(239,68,68,.45)}
+
+    .searchbar{display:flex; gap:8px; align-items:center}
+    .help{background:var(--panel); border:1px solid rgba(255,255,255,.12); border-radius:var(--radius); padding:12px 16px}
+    details summary{cursor:pointer; list-style:none}
+    details summary::-webkit-details-marker{display:none}
+    details .hint{color:var(--muted); font-size:13px}
+    code.small{font-size:12px; color:var(--muted)}
+    .howto{margin-left:8px; font-weight:800; text-decoration:none; padding:2px 8px; border-radius:999px; background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:#0b1020;}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="max hero">
+      <span class="tag">Ahmad’s 12‑Week Home Program</span>
+      <h1>Lean Machine: Dumbbells + Bodyweight, 6‑Day Rhythm</h1>
+      <div class="sub">Objective: fat loss, fitness, lean muscle • 40–50 mins/session • HIIT included • Knee‑friendly progression</div>
+      <div class="toolbar">
+        <div class="searchbar">
+          <span class="sub">Quick find</span>
+          <input id="q" placeholder="Search exercise / day / note…" />
+        </div>
+        <div>
+          <span class="sub">Start week</span>
+          <select id="startWeek"></select>
+        </div>
+        <button class="btn warn" id="exportBtn">Export Progress (JSON)</button>
+        <button class="btn danger" id="resetAll">Reset All</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max grid" style="margin-top:16px">
+    <aside class="sidebar">
+      <div class="box">
+        <div class="donut" id="donut" style="--p:0%"><span id="donutNum">0%</span></div>
+        <div class="kpis">
+          <div class="kpi"><strong id="kpiDone">0</strong><h3>Tasks Done</h3></div>
+          <div class="kpi"><strong id="kpiTotal">0</strong><h3>Total Tasks</h3></div>
+        </div>
+        <p class="note" style="margin-top:8px">Global completion updates live as you tick exercises. Your data auto‑saves in your browser (localStorage). Export anytime.</p>
+      </div>
+      <div class="box">
+        <h3 style="margin:0 0 8px">Phases</h3>
+        <div class="phases" id="phaseChips"></div>
+        <p class="note" style="margin-top:8px">
+          • <b>Phase 1 (W1–4)</b> Full‑Body + Conditioning + Knee Primer<br>
+          • <b>Phase 2 (W5–8)</b> PPL Hypertrophy (build shape)<br>
+          • <b>Phase 3 (W9–12)</b> PPL + Athletic Conditioning
+        </p>
+      </div>
+      <div class="box help">
+        <details>
+          <summary><strong>Warm‑up → Cooldown</strong></summary>
+          <div class="hint" style="margin-top:6px">
+            <b>Warm‑up (6–8 min)</b>: 2 rounds — 30s march-in-place, 10 air squats to box/chair (slow), 10 arm circles each, 10 hip hinges, 20s calf pumps, 20s glute bridges.<br>
+            <b>Knee‑Primer</b>: 2×10 slow <i>split‑squat isometric holds</i> (bottom 2s), 2×10 step‑ups to low step (control).<br>
+            <b>Cooldown (3–5 min)</b>: slow nasal breathing, quad stretch, calf stretch on wall, thoracic openers.
+          </div>
+        </details>
+        <details style="margin-top:8px">
+          <summary><strong>Progression & RPE</strong></summary>
+          <div class="hint" style="margin-top:6px">
+            Use <b>RPE 7–9</b> (2–3 reps left in tank). If you finish a set with ease, add 1–2 kg (or reps) next time. For unilateral moves, log both sides.
+          </div>
+        </details>
+        <details style="margin-top:8px">
+          <summary><strong>Knee‑Friendly HIIT</strong></summary>
+          <div class="hint" style="margin-top:6px">
+            Choose low‑impact options: shadow boxing combos, fast step‑ups to low box, high‑knee marches, KB/Dumbbell swings (hip hinge), mountain climbers (hands on bench), rope‑less skips.
+          </div>
+        </details>
+      </div>
+    </aside>
+
+    <section>
+      <div class="cards" id="cards"></div>
+    </section>
+  </main>
+
+  <script>
+    // ------- CONFIG -------
+    const USER = 'ahmad';
+    const KEY = (k)=>`wm_${USER}_${k}`;
+
+    // Core plan data (compact) — rendered into detailed cards
+    // 6 days/week × 12 weeks
+    // Phase 1 = Weeks 1-4: Full Body
+    // Phase 2 = Weeks 5-8: PPL (Push/Pull/Legs)
+    // Phase 3 = Weeks 9-12: PPL + Conditioning
+
+    const lowImpactHIIT = [
+      {name:'Shadow boxing flurries', work:'30s fast, 30s easy × 6–8'},
+      {name:'Low step-ups (alt.)', work:'20s on / 20s off × 8'},
+      {name:'Mountain climbers (elevated)', work:'20s on / 20s off × 8'},
+      {name:'DB swings (hip hinge)', work:'15 reps EMOM × 8 min'},
+      {name:'High-knee marches (fast)', work:'30s on / 30s off × 8'}
+    ];
+
+    // Utilities to create exercise blocks quickly
+    const EX = (name, sets, reps, notes='')=>({name, sets, reps, notes});
+
+    // --- Phase 1 (Full Body foundation, knee-friendly) ---
+    function phase1DayTemplate(dayIndex){
+      // Rotate emphasis subtly across days
+      const bundles = [
+        [
+          EX('Goblet Squat (to box/chair)', '3', '10–12', 'Tempo 3‑1‑2; knee‑friendly depth'),
+          EX('DB Floor Press', '3', '10–12', 'Elbows 45°'),
+          EX('One‑Arm DB Row', '3', '10–12/side', 'Hold at top 1s'),
+          EX('DB Hip Hinge (RDL)', '3', '10–12', 'Hips back, neutral spine'),
+          EX('Assisted Split Squat', '2', '8–10/side', 'Light support; slow eccentric')
+        ],
+        [
+          EX('Step‑Ups (low step)', '3', '8–10/side', 'Control down; knee tracks toes'),
+          EX('DB Shoulder Press (seated if needed)', '3', '10–12', ''),
+          EX('DB Gorilla Row', '3', '8–10/side', 'Hinge; anti‑rotation'),
+          EX('Glute Bridge (weighted optional)', '3', '12–15', 'Squeeze 1s top'),
+          EX('Side Plank', '2', '20–30s/side', '')
+        ],
+        [
+          EX('Box Squat (pause)', '3', '8–10', '1s pause on box'),
+          EX('DB Incline Floor Press (hips up)', '3', '8–12', 'Bridge to simulate incline'),
+          EX('Rear‑foot Elevated Split Squat (short ROM)', '2', '6–8/side', 'Hold support, partial depth'),
+          EX('DB Row to Hip', '3', '10–12/side', ''),
+          EX('Dead Bug', '2', '8–10/side', 'Core brace')
+        ]
+      ];
+      return bundles[dayIndex%3];
+    }
+
+    // --- Phase 2/3 (PPL) ---
+    const PPL = {
+      push: [
+        EX('DB Flat Press', '4', '8–12', ''),
+        EX('DB Shoulder Press', '3', '8–12', ''),
+        EX('DB Incline Push‑Up (feet elevated optional)', '3', 'AMRAP', 'Stop 1–2 reps in tank'),
+        EX('DB Lateral Raise', '3', '12–15', ''),
+        EX('Overhead Triceps Extension', '3', '10–12', '')
+      ],
+      pull: [
+        EX('One‑Arm DB Row', '4', '8–12/side', 'Pause 1s top'),
+        EX('DB Hip Hinge (RDL)', '3', '8–12', ''),
+        EX('Chest‑Supported Row (on bench/boxes)', '3', '10–12', ''),
+        EX('DB Hammer Curl', '3', '10–12', ''),
+        EX('Face Pulls (band) or Y‑T‑W (bodyweight)', '2', '12–15', '')
+      ],
+      legs: [
+        EX('Goblet Squat (tempo 3‑1‑2)', '4', '8–12', 'Use box if needed'),
+        EX('Split Squat', '3', '8–10/side', 'Hold support if needed'),
+        EX('DB Romanian Deadlift', '3', '8–12', ''),
+        EX('DB Step‑Ups (low)', '3', '8–10/side', 'Control down'),
+        EX('Calf Raises', '3', '12–15', '')
+      ]
+    };
+
+    // Per‑day HIIT suggestions
+    function hiitFor(day){
+      // Rotate low‑impact options
+      return lowImpactHIIT[day % lowImpactHIIT.length];
+    }
+
+    // Build the 12‑week schedule
+    const WEEKS = Array.from({length:12}, (_,i)=>{
+      const w = i+1;
+      let phase = w<=4?1: w<=8?2:3;
+      let split;
+      if(phase===1){ split = ['Full Body A','Full Body B','Full Body C','Full Body A','Full Body B','Recovery Mobility']; }
+      else{ // PPL x2
+        split = ['Push','Pull','Legs','Push','Pull','Legs'];
+      }
+      return {week:w, phase, split};
+    });
+
+    // Render helpers
+    const cardsEl = document.getElementById('cards');
+    const startWeekSel = document.getElementById('startWeek');
+    const phaseChipsEl = document.getElementById('phaseChips');
+
+    // Populate start week select
+    WEEKS.forEach(w=>{
+      const opt = document.createElement('option');
+      opt.value = w.week; opt.textContent = `Start at Week ${w.week}`;
+      startWeekSel.appendChild(opt);
+    });
+    startWeekSel.value = localStorage.getItem(KEY('startWeek')) || 1;
+    startWeekSel.addEventListener('change', e=>{
+      localStorage.setItem(KEY('startWeek'), e.target.value);
+      render();
+    });
+
+    // Theme system (Twilight default = mid‑tone, colorful)
+    (function(){
+      const toolbar = document.querySelector('.toolbar');
+      const wrap = document.createElement('div');
+      wrap.innerHTML = '<span class="sub">Theme</span> ' +
+        '<select id="themeSel">' +
+        '  <option value="twilight">Twilight</option>' +
+        '  <option value="workout-dark">Workout Dark</option>' +
+        '  <option value="amoled">AMOLED</option>' +
+        '  <option value="sunrise">Sunrise</option>' +
+        '</select>';
+      toolbar && toolbar.appendChild(wrap);
+
+      const THEMES = {
+        'twilight': { // mid brightness, colorful accents
+          '--bg':'#141b26','--panel':'#1c2433','--ink':'#eaf2ff','--muted':'#9fb0c8',
+          '--accent':'#22d3ee','--accent-2':'#a78bfa','--shadow':'0 10px 30px rgba(0,0,0,.35)'
+        },
+        'workout-dark': {
+          '--bg':'#0b1020','--panel':'#0f1426','--ink':'#e8ecf8','--muted':'#9aa3bf',
+          '--accent':'#00d2ff','--accent-2':'#7c4dff','--shadow':'0 10px 30px rgba(0,0,0,.45)'
+        },
+        'amoled': {
+          '--bg':'#000000','--panel':'#0b0b0b','--ink':'#e7e7e7','--muted':'#9aa3bf',
+          '--accent':'#22c55e','--accent-2':'#06b6d4','--shadow':'0 10px 30px rgba(0,0,0,.6)'
+        },
+        'sunrise': { // soft warm dark
+          '--bg':'#161326','--panel':'#1e1a33','--ink':'#f6f3ff','--muted':'#c7c0e0',
+          '--accent':'#f59e0b','--accent-2':'#ef4444','--shadow':'0 10px 30px rgba(0,0,0,.4)'
+        }
+      };
+      function applyTheme(name){
+        const t = THEMES[name] || THEMES['twilight'];
+        for(const k in t){ document.documentElement.style.setProperty(k, t[k]); }
+        localStorage.setItem(KEY('theme'), name);
+      }
+      const sel = document.getElementById('themeSel');
+      const saved = localStorage.getItem(KEY('theme')) || 'twilight';
+      if(sel){ sel.value = saved; sel.addEventListener('change', e=>applyTheme(e.target.value)); }
+      applyTheme(saved);
+    })();
+
+    // Phase chips
+    const phases = [
+      {id:1,label:'Phase 1 • W1–4',color:'var(--accent)'},
+      {id:2,label:'Phase 2 • W5–8',color:'var(--accent-2)'},
+      {id:3,label:'Phase 3 • W9–12',color:'linear-gradient(90deg,var(--accent),var(--accent-2))'}
+    ];
+    let activePhase = parseInt(localStorage.getItem(KEY('phase'))) || 1;
+    function renderPhaseChips(){
+      phaseChipsEl.innerHTML='';
+      phases.forEach(p=>{
+        const b=document.createElement('button');
+        b.className='chip'+(p.id===activePhase?' active':'');
+        b.style.borderColor='rgba(255,255,255,.14)';
+        b.innerHTML = p.label;
+        b.onclick=()=>{activePhase=p.id; localStorage.setItem(KEY('phase'), activePhase); render();};
+        phaseChipsEl.appendChild(b);
+      });
+    }
+
+    // Search
+    const q = document.getElementById('q');
+    q.value = localStorage.getItem(KEY('q'))||'';
+    q.addEventListener('input', ()=>{ localStorage.setItem(KEY('q'), q.value); renderCards(); });
+
+    // Export/Reset
+    document.getElementById('exportBtn').onclick = ()=>{
+      const data = {};
+      for(let i=0;i<localStorage.length;i++){
+        const k = localStorage.key(i);
+        if(k.startsWith(`wm_${USER}_`)){ data[k]=localStorage.getItem(k); }
+      }
+      const blob = new Blob([JSON.stringify(data,null,2)], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = Object.assign(document.createElement('a'), {href:url, download:`ahmad_workout_progress.json`});
+      a.click(); URL.revokeObjectURL(url);
+    };
+    document.getElementById('resetAll').onclick=()=>{
+      if(confirm('Reset ALL saved progress?')){
+        Object.keys(localStorage).forEach(k=>{ if(k.startsWith(`wm_${USER}_`)) localStorage.removeItem(k); });
+        location.reload();
+      }
+    };
+
+    // Compute task counts for donut
+    function computeTotals(){
+      const total = document.querySelectorAll('.ex input[type=checkbox]').length;
+      let done = 0; document.querySelectorAll('.ex input[type=checkbox]').forEach(cb=>{ if(cb.checked) done++; });
+      return {total, done, pct: total? Math.round((done/total)*100):0};
+    }
+    function updateKpis(){
+      const {total,done,pct} = computeTotals();
+      document.getElementById('kpiDone').textContent = done;
+      document.getElementById('kpiTotal').textContent = total;
+      document.getElementById('donut').style.setProperty('--p', pct+'%');
+      document.getElementById('donutNum').textContent = pct+'%';
+    }
+
+    // Local storage handlers
+    function getCheckKey(week, day, idx){ return KEY(`w${week}_d${day}_c${idx}`); }
+    function getNoteKey(week, day, idx){ return KEY(`w${week}_d${day}_n${idx}`); }
+
+    function exElement(week, day, idx, ex){
+      const wrap = document.createElement('div');
+      wrap.className='ex';
+      const cb = document.createElement('input'); cb.type='checkbox';
+      cb.checked = localStorage.getItem(getCheckKey(week,day,idx))==='1';
+      cb.addEventListener('change',()=>{
+        localStorage.setItem(getCheckKey(week,day,idx), cb.checked?'1':'0');
+        updateKpis();
+      });
+      const label = document.createElement('div'); label.className='label';
+      const howto = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(ex.name + ' dumbbell proper form');
+      label.innerHTML = `<strong>${ex.name}</strong><div class=\"meta\">Sets: ${ex.sets} • Reps: ${ex.reps} ${ex.notes?('• '+ex.notes):''} • <a class=\"howto\" href=\"${howto}\" target=\"_blank\" rel=\"noopener\">How‑to ▶</a></div>`;
+      const notes = document.createElement('input');
+      notes.placeholder='Weight/Reps/RPE notes…';
+      notes.value = localStorage.getItem(getNoteKey(week,day,idx)) || '';
+      notes.oninput = ()=>localStorage.setItem(getNoteKey(week,day,idx), notes.value);
+      wrap.append(cb,label,notes);
+      return wrap;
+    }
+
+    function renderCards(){
+      const filter = (q.value||'').toLowerCase();
+      cardsEl.innerHTML='';
+      const startAt = parseInt(startWeekSel.value)||1;
+      WEEKS.filter(w=>w.phase===activePhase).forEach(w=>{
+        // Week container
+        const weekBox = document.createElement('div');
+        weekBox.style.gridColumn = '1/-1';
+        weekBox.innerHTML = `<div class="card" style="border-color:rgba(255,255,255,.12)">
+          <header>
+            <h3>Week ${w.week} ${w.phase===1?'<span class="pill" style="margin-left:6px">Phase 1: Full Body</span>': w.phase===2?'<span class="pill" style="margin-left:6px">Phase 2: PPL</span>':'<span class="pill" style="margin-left:6px">Phase 3: PPL + Conditioning</span>'}</h3>
+          </header>
+          <div class="body">
+            <div class="sub">Split: ${w.split.join(' • ')}</div>
+            <div class="controls">
+              <button class="btn warn" data-week="${w.week}" onclick="resetWeek(${w.week})">Reset Week</button>
+            </div>
+          </div>
+        </div>`;
+        cardsEl.appendChild(weekBox);
+
+        // Day cards
+        w.split.forEach((label, dIdx)=>{
+          const day = dIdx+1;
+          const c = document.createElement('div'); c.className='card';
+          const hiit = hiitFor(day);
+
+          let exs = [];
+          if(w.phase===1){
+            // Full body template rotation
+            exs = phase1DayTemplate(dIdx);
+            if(label==='Recovery Mobility'){
+              exs = [
+                EX('Knee Isometrics (wall sit)', '3', '20–30s', 'Stop if pain; easy angle'),
+                EX('Hip Airplanes or Supported Single‑Leg RDL', '2', '6–8/side', 'Balance & control'),
+                EX('Cat‑Camel + Thoracic Opener', '2', '6–8 slow', ''),
+                EX('Calf Pumps on Wall', '2', '20–30s', '')
+              ];
+            }
+          } else {
+            const map = { 'Push':PPL.push, 'Pull':PPL.pull, 'Legs':PPL.legs };
+            exs = map[label] || [];
+          }
+
+          const dayId = `W${w.week}D${day}`;
+          const warmup = `Warm‑up: 2 rounds — 30s march, 10 air squats to box, 10 arm circles, 10 hip hinges, 20s calf pumps, 20s glute bridges.`;
+
+          c.innerHTML = `
+            <header>
+              <h3>${dayId} • ${label}</h3>
+            </header>
+            <div class="body">
+              <div class="meta">${warmup}</div>
+              <div class="list"></div>
+              <div class="finisher">
+                <strong>HIIT Finisher:</strong> ${hiit.name} — <em>${hiit.work}</em>
+              </div>
+              <div class="cooldown">
+                <strong>Cooldown:</strong> nasal breathing 2–3 min • quad & calf stretch • thoracic opener
+              </div>
+              <div class="controls">
+                <button class="btn ok" onclick="markDay('${dayId}', true)">Mark Day Complete</button>
+                <button class="btn" onclick="markDay('${dayId}', false)">Unmark Day</button>
+              </div>
+            </div>
+          `;
+
+          const list = c.querySelector('.list');
+          exs.forEach((ex, idx)=> list.appendChild(exElement(w.week, day, idx, ex)) );
+
+          // Search filter visibility
+          const textBlob = (label + ' ' + exs.map(e=>e.name).join(' ') + ' week '+w.week).toLowerCase();
+          if(!filter || textBlob.includes(filter)) cardsEl.appendChild(c);
+        });
+      });
+
+      updateKpis();
+    }
+
+    // Week reset: remove week-specific keys
+    window.resetWeek = (week)=>{
+      if(!confirm(`Reset all saved items in Week ${week}?`)) return;
+      const prefix = KEY(`w${week}_`);
+      Object.keys(localStorage).forEach(k=>{ if(k.startsWith(prefix)) localStorage.removeItem(k); });
+      renderCards();
+    }
+
+    // Mark day complete/uncomplete: tick/untick its checkboxes
+    window.markDay = (dayId, val)=>{
+      document.querySelectorAll('.card header h3').forEach(h=>{
+        if(h.textContent.startsWith(dayId)){
+          const card = h.closest('.card');
+          card.querySelectorAll('.ex input[type=checkbox]').forEach(cb=>{ cb.checked=val; const key = getCheckKeyFromDom(cb); localStorage.setItem(key, val?'1':'0'); });
+        }
+      });
+      updateKpis();
+    }
+    function getCheckKeyFromDom(cb){
+      // Re-build key by reading siblings (fragile but fine within same render pass)
+      // We stored key as wm_ahmad_w{week}_d{day}_c{idx}
+      // To store it in dataset, we can instead assign dataset when creating — adjust above
+      // (Refactor): set dataset.key when creating
+      return cb.dataset.key;
+    }
+
+    // Patch: set dataset.key during creation (override exElement)
+    const _exElement = exElement;
+    exElement = function(week, day, idx, ex){
+      const el = _exElement(week,day,idx,ex);
+      const cb = el.querySelector('input[type=checkbox]');
+      cb.dataset.key = getCheckKey(week,day,idx);
+      return el;
+    }
+
+    function render(){
+      renderPhaseChips();
+      renderCards();
+    }
+
+    render();
+  </script>
+</body>
+</html>
